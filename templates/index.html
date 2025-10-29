@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe - Home</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        text-align: center;
+        background: radial-gradient(circle at top left, #6a11cb, #2575fc);
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: #fff;
+    }
+
+    h1 {
+        font-size: 3em;
+        text-shadow: 0 0 10px #fff, 0 0 20px #6a11cb;
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px #fff, 0 0 20px #6a11cb; }
+        to { text-shadow: 0 0 20px #fff, 0 0 40px #2575fc; }
+    }
+
+    h2 {
+        font-size: 1.5em;
+        color: #ffefef;
+        margin-bottom: 25px;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 40px 60px;
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        animation: fadein 1.5s ease;
+    }
+
+    @keyframes fadein {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .mode-button {
+        display: inline-block;
+        margin: 10px;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #f7971e, #ffd200);
+        border-radius: 25px;
+        color: #222;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.1em;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .mode-button:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        color: #fff;
+        box-shadow: 0 0 20px #ff6a00;
+    }
+
+    label {
+        font-size: 1.2em;
+        font-weight: 600;
+        display: block;
+        margin: 15px 0 8px 0;
+        color: #fff;
+    }
+
+    select {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1em;
+        background: linear-gradient(135deg, #43cea2, #185a9d);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        appearance: none;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        outline: none;
+    }
+
+    select option {
+        background-color: #222;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    select:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #185a9d, #43cea2);
+    }
+
+    button {
+        margin-top: 25px;
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 14px 35px;
+        font-size: 1.2em;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s ease;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.4);
+    }
+
+    button:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #ff4b2b, #ff416c);
+        box-shadow: 0 0 25px #ff416c;
+    }
+
+    footer {
+        margin-top: 25px;
+        color: #eee;
+        font-size: 0.9em;
+    }
+
+    /* floating glowing circles */
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff, transparent);
+        animation: float 10s infinite ease-in-out;
+        opacity: 0.2;
+    }
+
+    @keyframes float {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-40px); }
+    }
+</style>
+</head>
+<body>
+    <!-- floating lights -->
+    <div class="circle" style="width:80px;height:80px;top:10%;left:15%;animation-delay:0s;"></div>
+    <div class="circle" style="width:100px;height:100px;top:60%;left:70%;animation-delay:2s;"></div>
+    <div class="circle" style="width:60px;height:60px;top:80%;left:30%;animation-delay:4s;"></div>
+
+    <div class="container">
+        <h1>🎮 Welcome to Tic Tac Toe!</h1>
+        <h2>Choose a Mode:</h2>
+
+        <a href="#" class="mode-button" onclick="setMode('computer')">🤖 Play with Computer</a>
+        <a href="#" class="mode-button" onclick="setMode('two')">👫 Two Player Mode</a>
+
+        <div id="settings" style="display:none;">
+            <label for="size">🟦 Select Board Size:</label>
+            <select id="size">
+                <option value="3">3 × 3</option>
+                <option value="4">4 × 4</option>
+                <option value="5">5 × 5</option>
+            </select>
+
+            <div id="difficulty-section" style="display:none;">
+                <label for="difficulty">⚙️ Difficulty (Computer Mode Only):</label>
+                <select id="difficulty">
+                    <option value="easy">Easy 😄</option>
+                    <option value="medium">Medium 🤔</option>
+                    <option value="hard">Hard 🧠</option>
+                </select>
+            </div>
+
+            <br>
+            <button onclick="startGame()">▶ Start Game</button>
+        </div>
+    </div>
+
+    <footer>© 2025 Tic Tac Toe | Play Smart, Play Fun 🎉</footer>
+
+    <!-- Simple sound effects -->
+    <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9a7ef2b3ab.mp3?filename=button-124476.mp3"></audio>
+    <audio id="hoverSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_ee4db522c4.mp3?filename=click-124467.mp3"></audio>
+
+    <script>
+        let selectedMode = null;
+        const clickSound = document.getElementById("clickSound");
+        const hoverSound = document.getElementById("hoverSound");
+
+        // add hover sound to buttons
+        document.addEventListener("mouseover", e => {
+            if (e.target.classList.contains("mode-button") || e.target.tagName === "BUTTON") {
+                hoverSound.currentTime = 0;
+                hoverSound.play();
+            }
+        });
+
+        function setMode(mode) {
+            selectedMode = mode;
+            clickSound.play();
+            document.getElementById("settings").style.display = "block";
+            document.getElementById("difficulty-section").style.display =
+                (mode === "computer") ? "block" : "none";
+        }
+
+        function startGame() {
+            clickSound.play();
+            const size = document.getElementById("size").value;
+            const difficulty = document.getElementById("difficulty").value;
+            if (selectedMode === "computer") {
+                window.location.href = `/play/computer/${size}?difficulty=${difficulty}`;
+            } else {
+                window.location.href = `/play/two/${size}`;
+            }
+        }
+    </script>
+</body>
+</html>

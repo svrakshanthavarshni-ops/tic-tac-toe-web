@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe - {{ mode|capitalize }} Mode</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at top left, #6a11cb, #2575fc);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        color: #fff;
+        overflow: hidden;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 0 0 15px #fff;
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px #fff, 0 0 20px #6a11cb; }
+        to { text-shadow: 0 0 20px #fff, 0 0 40px #2575fc; }
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        color: #ffefef;
+        font-size: 1.2em;
+    }
+
+    .board {
+        display: grid;
+        gap: 8px;
+        background: rgba(255,255,255,0.1);
+        padding: 10px;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        animation: fadein 1.2s ease;
+    }
+
+    @keyframes fadein {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .cell {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 15px;
+        font-size: 2em;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .cell:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.05);
+    }
+
+    .cell.taken {
+        cursor: not-allowed;
+    }
+
+    .controls {
+        margin-top: 25px;
+        display: flex;
+        gap: 15px;
+    }
+
+    button {
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        border: none;
+        border-radius: 30px;
+        color: #fff;
+        padding: 12px 28px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.4);
+    }
+
+    button:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #ff4b2b, #ff416c);
+        box-shadow: 0 0 25px #ff416c;
+    }
+
+    footer {
+        margin-top: 25px;
+        color: #eee;
+        font-size: 0.9em;
+    }
+
+    #message {
+        margin-top: 20px;
+        font-size: 1.3em;
+        font-weight: 600;
+    }
+</style>
+</head>
+<body>
+
+    <h1>🎯 Tic Tac Toe - {{ mode|capitalize }} Mode</h1>
+    <h2>Board Size: {{ size }} × {{ size }} {% if mode == 'computer' %}<br>Difficulty: {{ difficulty|capitalize }}{% endif %}</h2>
+
+    <div id="board" class="board"></div>
+
+    <div id="message"></div>
+
+    <div class="controls">
+        <button onclick="resetGame()">🔁 Play Again</button>
+        <button onclick="goHome()">⬅ Back to Home</button>
+    </div>
+
+    <footer>© 2025 Tic Tac Toe | Play Smart, Play Fun 🎉</footer>
+
+    <!-- Sound effects -->
+    <audio id="moveSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9a7ef2b3ab.mp3?filename=button-124476.mp3"></audio>
+    <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_68e9d5f931.mp3?filename=success-1-6297.mp3"></audio>
+    <audio id="drawSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2cda51d191.mp3?filename=notification-1-126505.mp3"></audio>
+
+<script>
+const size = {{ size }};
+const mode = "{{ mode }}";
+const difficulty = "{{ difficulty }}";
+const board = document.getElementById("board");
+const message = document.getElementById("message");
+const moveSound = document.getElementById("moveSound");
+const winSound = document.getElementById("winSound");
+const drawSound = document.getElementById("drawSound");
+
+let grid = Array(size * size).fill(null);
+let currentPlayer = "X";
+let gameOver = false;
+
+board.style.gridTemplateColumns = `repeat(${size}, 80px)`;
+
+for (let i = 0; i < size * size; i++) {
+    const cell = document.createElement("div");
+    cell.classList.add("cell");
+    cell.addEventListener("click", () => makeMove(i, cell));
+    board.appendChild(cell);
+}
+
+function makeMove(index, cell) {
+    if (grid[index] || gameOver) return;
+    moveSound.play();
+    grid[index] = currentPlayer;
+    cell.textContent = currentPlayer;
+    cell.classList.add("taken");
+
+    if (checkWin(currentPlayer)) {
+        message.textContent = `${currentPlayer} Wins! 🎉`;
+        winSound.play();
+        gameOver = true;
+        return;
+    }
+
+    if (grid.every(c => c)) {
+        message.textContent = "It's a Draw 😅";
+        drawSound.play();
+        gameOver = true;
+        return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+
+    if (mode === "computer" && currentPlayer === "O") {
+        setTimeout(computerMove, 400);
+    }
+}
+
+function computerMove() {
+    let move;
+    if (difficulty === "easy") {
+        const emptyCells = grid.map((v, i) => v ? null : i).filter(v => v !== null);
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    } else if (difficulty === "medium") {
+        move = findBestMove(0.5);
+    } else {
+        move = findBestMove(1);
+    }
+
+    if (move !== undefined) {
+        const cell = board.children[move];
+        makeMove(move, cell);
+    }
+}
+
+// Simple AI (hard mode = perfect play)
+function findBestMove(chance = 1) {
+    const empty = grid.map((v, i) => v ? null : i).filter(v => v !== null);
+    if (Math.random() > chance) {
+        return empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    for (let i of empty) {
+        grid[i] = "O";
+        if (checkWin("O")) { grid[i] = null; return i; }
+        grid[i] = null;
+    }
+
+    for (let i of empty) {
+        grid[i] = "X";
+        if (checkWin("X")) { grid[i] = null; return i; }
+        grid[i] = null;
+    }
+
+    return empty[Math.floor(Math.random() * empty.length)];
+}
+
+function checkWin(player) {
+    for (let r = 0; r < size; r++) {
+        if (grid.slice(r * size, (r + 1) * size).every(c => c === player)) return true;
+    }
+
+    for (let c = 0; c < size; c++) {
+        if (grid.filter((_, i) => i % size === c).every(c => c === player)) return true;
+    }
+
+    if (grid.filter((_, i) => i % (size + 1) === 0).every(c => c === player)) return true;
+    if (grid.filter((_, i) => i % (size - 1) === 0 && i !== 0 && i !== size * size - 1).every(c => c === player)) return true;
+
+    return false;
+}
+
+function resetGame() {
+    moveSound.play();
+    grid.fill(null);
+    currentPlayer = "X";
+    gameOver = false;
+    message.textContent = "";
+    [...board.children].forEach(c => {
+        c.textContent = "";
+        c.classList.remove("taken");
+    });
+}
+
+function goHome() {
+    window.location.href = "/";
+}
+</script>
+</body>
+</html>
